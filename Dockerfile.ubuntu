@@ -1,0 +1,23 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y openssh-server sudo python3 \
+    && mkdir /var/run/sshd
+
+RUN useradd -m -s /bin/bash ansible \
+    && echo "ansible:ansible" | chpasswd \
+    && usermod -aG sudo ansible \
+    && echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN mkdir -p /home/ansible/.ssh \
+    && chmod 700 /home/ansible/.ssh \
+    && chown -R ansible:ansible /home/ansible/.ssh
+
+COPY id_rsa.pub /home/ansible/.ssh/authorized_keys
+RUN chmod 600 /home/ansible/.ssh/authorized_keys \
+    && chown ansible:ansible /home/ansible/.ssh/authorized_keys
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 22
+CMD ["/entrypoint.sh"]

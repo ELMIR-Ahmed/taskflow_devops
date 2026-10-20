@@ -1,0 +1,85 @@
+services:
+  app_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: app_server
+    privileged: true
+    ports:
+      - "2221:22"
+      - "5173:5173"
+      - "3001:3001"
+      - "8081:8081"
+    volumes:
+      - app_docker:/var/lib/docker
+      - app_etc:/etc
+      - app_apt:/var/lib/apt
+      - app_usr:/usr
+      - app_containerd:/var/lib/containerd
+      - app_opt:/opt
+    networks:
+      - devops_net
+
+  monitoring_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: monitoring_server
+    privileged: true
+    ports:
+      - "2222:22"
+      - "9090:9090"
+      - "3000:3000"
+    volumes:
+      - monitoring_docker:/var/lib/docker
+      - monitoring_etc:/etc
+      - monitoring_apt:/var/lib/apt
+      - monitoring_usr:/usr
+      - monitoring_containerd:/var/lib/containerd
+      - monitoring_opt:/opt
+    networks:
+      - devops_net
+
+  cicd_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: cicd_server
+    privileged: true
+    ports:
+      - "2223:22"      # ssh
+      - "8085:8085"    # Jenkins
+      - "9000:9000"    # SonarQube
+    volumes:
+      - cicd_docker:/var/lib/docker
+      - cicd_etc:/etc
+      - cicd_apt:/var/lib/apt
+      - cicd_usr:/usr
+      - cicd_containerd:/var/lib/containerd
+      - cicd_opt:/opt
+    networks:
+      - devops_net
+
+volumes:
+  app_docker:
+  app_containerd:
+  app_apt:
+  app_etc:
+  app_usr:
+  monitoring_docker:
+  monitoring_containerd:
+  monitoring_apt:
+  monitoring_etc:
+  monitoring_usr:
+  cicd_docker:
+  cicd_containerd:
+  cicd_apt:
+  cicd_etc:
+  cicd_usr:
+  app_opt:
+  cicd_opt:
+  monitoring_opt:
+
+networks:
+  devops_net:
+    driver: bridge

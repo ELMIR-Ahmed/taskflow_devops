@@ -1,0 +1,14 @@
+---
+monitoring_base_dir: "/opt/monitoring"
+
+# Prometheus
+prometheus_port: "9090"
+prometheus_image: "prom/prometheus:v3.5.0"
+prometheus_data_dir: "{{ monitoring_base_dir }}/prometheus"
+
+# Grafana
+grafana_port: "3000"
+grafana_image: "grafana/grafana:latest"
+grafana_admin_user: "admin"
+grafana_admin_password: "admin123"
+grafana_data_dir: "{{ monitoring_base_dir }}/grafana"

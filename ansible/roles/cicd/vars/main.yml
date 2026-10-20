@@ -1,0 +1,13 @@
+---
+# Chemin du dossier qui va contenir les service jenkins et sonar (dossier créer dans le systeme de fichier du conteneur cicd_server)
+cicd_base_dir: "/opt/cicd"
+
+# Jenkins
+jenkins_port: "8085"
+jenkins_image: "ahmed00elmir/devops-registry:jenkins-docker"
+jenkins_data_dir: "{{ cicd_base_dir }}/jenkins"
+
+# SonarQube
+sonar_port: "9000"
+sonar_image: "sonarqube:community"
+sonar_data_dir: "{{ cicd_base_dir }}/sonarqube"

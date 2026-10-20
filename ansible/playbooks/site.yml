@@ -1,0 +1,19 @@
+- name: Installation de docker sur les serveurs
+  hosts: all
+  become: yes
+  roles:
+    - common
+
+- name: configuration du cicd_server
+  hosts: cicd_servers
+  become: yes
+  roles:
+    - common
+    - cicd
+
+- name: configuration du monitoring_server
+  hosts: monitoring_servers
+  become: yes
+  roles:
+    - common
+    - monitoring

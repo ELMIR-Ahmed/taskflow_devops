@@ -1,0 +1,31 @@
+services:
+  prometheus:
+    image: {{ prometheus_image }}
+    restart: unless-stopped
+    ports:
+      - "{{ prometheus_port }}:9090"
+    volumes:
+      - {{ prometheus_data_dir }}:/prometheus
+      - {{ monitoring_base_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    user: root
+    networks: 
+      - monitoring-net
+
+  grafana:
+    image: {{ grafana_image }}
+    restart: unless-stopped
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - {{ grafana_data_dir }}:/var/lib/grafana
+    networks:
+      - monitoring-net
+    environment:
+      GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring-net:
+    driver: bridge

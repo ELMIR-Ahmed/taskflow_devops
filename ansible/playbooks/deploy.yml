@@ -1,0 +1,5 @@
+- name: configuration du app_server
+  hosts: app_servers
+  become: yes
+  roles:
+    - app

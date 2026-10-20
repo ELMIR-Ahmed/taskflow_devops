@@ -1,0 +1,41 @@
+---
+- name: Vérifier Docker
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Create app base directory
+  file:
+    path: "{{ app_base_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Create mysql data directory
+  file:
+    path: "{{ app_base_dir }}/mysql"
+    state: directory
+    mode: "0755"
+
+- name: Déployer docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ app_base_dir }}/docker-compose.yml"
+
+- name: Télécharger les dernières images
+  command:
+    cmd: docker compose pull
+    chdir: "{{ app_base_dir }}"
+
+- name: Démarrer les services
+  command:
+    cmd: docker compose up -d
+    chdir: "{{ app_base_dir }}"
+
+- name: Vérifier les conteneurs
+  command: docker ps
+  register: containers
+  changed_when: false
+
+- name: Afficher les conteneurs
+  debug:
+    var: containers.stdout_lines

@@ -1,0 +1,17 @@
+---
+app_base_dir: "/opt/app"
+
+frontend_image: "ahmed00elmir/taskflow-frontend:latest"
+backend_image: "ahmed00elmir/taskflow-backend:latest"
+
+frontend_port: "5173"
+backend_port: "3001"
+
+mysql_image: "mysql:8.0"
+mysql_root_password: root_password
+mysql_database: taskflow
+mysql_user: taskflow
+mysql_password: taskflow_pass
+
+phpmyadmin_image: phpmyadmin/phpmyadmin
+phpmyadmin_port: "8081"

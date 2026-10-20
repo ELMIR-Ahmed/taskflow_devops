@@ -1,0 +1,71 @@
+---
+# tasks file for cicd
+- name: Vérifier Docker
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Créer le dossier CICD
+  file:
+    path: /opt/cicd
+    state: directory
+    mode: 0755
+
+- name: Créer les dossiers Jenkins et Sonarqube
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop: 
+    - "{{ jenkins_data_dir }}"
+    - "{{ sonar_data_dir }}"
+
+- name: Corriger les permissions SonarQube (UID 1000)
+  file:
+    path: "{{ item }}"
+    owner: '1000'
+    group: '1000'
+    recurse: yes
+  loop:
+    - "{{ sonar_data_dir }}"
+    - "{{ cicd_base_dir }}/sonar_extensions"
+    - "{{ cicd_base_dir }}/sonar_logs"
+
+- name: Configurer vm.max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: '524288'
+    state: present
+    reload: yes
+
+- name: Install Python docker dependencies
+  apt:
+    name:
+      - python3-pip
+      - python3-requests
+    state: present
+    update_cache: yes
+
+- name: Docker login to registry
+  community.docker.docker_login:
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
+
+- name: Déployer docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ cicd_base_dir }}/docker-compose.yml"
+
+- name: Démarrer les services
+  command:
+    cmd: docker compose up -d --build
+    chdir: "{{ cicd_base_dir }}"
+
+- name: Vérifier les conteneurs
+  command: docker ps
+  register: containers
+  changed_when: false
+
+- name: Afficher les conteneurs
+  debug:
+    var: containers.stdout_lines

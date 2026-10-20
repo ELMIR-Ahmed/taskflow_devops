@@ -1,0 +1,23 @@
+services:
+  jenkins:
+    image: {{ jenkins_image }}
+    restart: always
+    ports:
+      - "{{ jenkins_port }}:8080"
+      - "50000:50000"
+    volumes:
+      - {{ jenkins_data_dir }}:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root
+
+  sonarqube:
+    image: {{ sonar_image }}
+    restart: always
+    ports:
+      - "{{ sonar_port }}:9000"
+    volumes:
+      - {{ sonar_data_dir }}:/opt/sonarqube/data
+      - {{ cicd_base_dir }}/sonar_extensions:/opt/sonarqube/extensions
+      - {{ cicd_base_dir }}/sonar_logs:/opt/sonarqube/logs
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
